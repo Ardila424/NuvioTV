@@ -17,6 +17,17 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             const body = (pr.body || "").trim();
+            const title = (pr.title || "").trim().toLowerCase();
+            const normalizedBody = body.toLowerCase();
+
+            const isBranchCopySyncPr =
+              title.includes("move changes from original branch to the copy") ||
+              normalizedBody === "move changes from original branch to the copy";
+
+            if (isBranchCopySyncPr) {
+              core.info("Skipping PR template check for branch-copy sync PR.");
+              return;
+            }
 
             function sectionContent(title) {
               const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
